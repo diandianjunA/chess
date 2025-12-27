@@ -17,7 +17,7 @@ void draw_menu(int highlighted) {
         "_|        _|_|_|_|  _|_|_|      _|_|      _|_|    ",
         "_|        _|    _|  _|              _|        _|  ",
         "  _|_|_|  _|    _|  _|_|_|_|  _|_|_|    _|_|_|    ",
-        "            [ 国际象棋 - CHESS ]                  "
+        "             [ - - - CHESS - - - ]                "
     };
     int title_rows = 6;
     
@@ -43,7 +43,7 @@ void draw_menu(int highlighted) {
     for (int i = 0; i < 3; i++) {
         int opt_width = strlen(options[i]);
         int opt_x = (cols - opt_width) / 2;
-        int opt_y = rows/2 + i * 2;
+        int opt_y = rows/2 + i * 2 + 1;
 
         if (i == highlighted) {
             attron(A_REVERSE | COLOR_PAIR(3) | A_BOLD);
@@ -71,7 +71,15 @@ int main() {
     keypad(stdscr, TRUE);
 
     // 开启鼠标支持
-    mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL);
+    if (mousemask(ALL_MOUSE_EVENTS | REPORT_MOUSE_POSITION, NULL)) {
+        mvprintw(0, 0, "Mouse support enabled.");
+    } else {
+        mvprintw(0, 0, "Error: Terminal does not support mouse!");
+        refresh();
+        getch(); // 等待用户按键
+        endwin();
+        return 1;
+    }
 
     init_pair(1, COLOR_BLACK, COLOR_WHITE);   // 浅色背景
     init_pair(2, COLOR_WHITE, COLOR_BLACK);   // 深色背景
@@ -125,10 +133,12 @@ int main() {
             }
         } else if (state == SINGLE_PLAYER) {
             // 游戏结束后，可以将 state 设回 MENU
+            board.restart();
             board.single_mode_start();
             state = MENU; 
         } else if (state == DOUBLE_PLAYER) {
             // 游戏结束后，可以将 state 设回 MENU
+            board.restart();
             board.double_mode_start();
             state = MENU; 
         }

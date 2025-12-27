@@ -12,6 +12,7 @@
 #define KING   6 // 王
 #define PREDICTED_MOVE 7 // 预测移动
 
+extern int initialBoard[8][8];
 extern int board[8][8];
 
 inline const char* get_piece_letter(int piece_val) {
